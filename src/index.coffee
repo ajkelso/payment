@@ -248,14 +248,15 @@ formatMonthExpiry = (e) ->
     QJ.trigger(target, 'change')
 
 formatForwardExpiry = (e) ->
-  digit = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  digit = ev.data
   return unless /^\d+$/.test(digit)
 
   target = e.target
   val     = QJ.val(target)
 
-  if /^\d\d$/.test(val)
-    QJ.val(target, "#{val} / ")
+  if /^\d\d\d$/.test(val)
+    QJ.val(target, val.slice(0,2) + " / " + val.slice(2))
     QJ.trigger(target, 'change')
 
 formatForwardSlash = (e) ->
@@ -337,11 +338,11 @@ restrictExpiry = (e, length) ->
 
   return if hasTextSelected(target)
 
-  value = QJ.val(target) + digit
+  value = QJ.val(target)
   sanitizedValue = value.replace(/\D/g, '')
 
   if sanitizedValue.length > length
-    QJ.val(target, value.substring(0, value[length - 1]))
+    QJ.val(target, value.substring(0, value.length -1))
 
 restrictCombinedExpiry = (e) ->
   return restrictExpiry e, 6
@@ -490,11 +491,11 @@ class Payment
       [month, year] = el
       @formatCardExpiryMultiple month, year
     else
-      QJ.on(el, 'input', restrictCombinedExpiry);
-      QJ.on(el, 'input', formatExpiry);
-      QJ.on(el, 'keydown', formatForwardSlash);
-      QJ.on(el, 'keydown', formatForwardExpiry);
-      QJ.on(el, 'keydown', formatBackExpiry);
+      QJ.on el, 'input', restrictCombinedExpiry
+      QJ.on el, 'input', formatExpiry
+      QJ.on el, 'keypress', formatForwardSlash
+      QJ.on el, 'input', formatForwardExpiry
+      QJ.on el, 'keydown', formatBackExpiry
     el
   @formatCardExpiryMultiple: (month, year) ->
     QJ.on month, 'keypress', restrictMonthExpiry
