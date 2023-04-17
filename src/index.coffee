@@ -342,7 +342,7 @@ restrictExpiry = (e, length) ->
   sanitizedValue = value.replace(/\D/g, '')
 
   if sanitizedValue.length > length
-    QJ.val(target, value.substring(0, (value.length) -1))
+    QJ.val(target, value.substring(0, value.length - 1))
 
 restrictCombinedExpiry = (e) ->
   return restrictExpiry e, 6
