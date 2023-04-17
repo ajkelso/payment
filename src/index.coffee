@@ -494,7 +494,7 @@ class Payment
       QJ.on el, 'input', restrictCombinedExpiry
       QJ.on el, 'input', formatExpiry
       QJ.on el, 'keypress', formatForwardSlash
-      QJ.on el, 'keypress', formatForwardExpiry
+      QJ.on el, 'input', formatForwardExpiry
       QJ.on el, 'keydown', formatBackExpiry
     el
   @formatCardExpiryMultiple: (month, year) ->
