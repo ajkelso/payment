@@ -214,20 +214,19 @@ formatBackCardNumber = (e) ->
 # Format Expiry
 
 formatExpiry = (e) ->
+  ev = e.originalEvent
   # Only format if input is a number
-  digit = String.fromCharCode(e.which)
+  digit = ev.data
   return unless /^\d+$/.test(digit)
 
   target = e.target
-  val     = QJ.val(target) + digit
+  val     = QJ.val(target)
 
   if /^\d$/.test(val) and val not in ['0', '1']
-    e.preventDefault()
     QJ.val(target, "0#{val} / ")
     QJ.trigger(target, 'change')
 
   else if /^\d\d$/.test(val)
-    e.preventDefault()
     QJ.val(target, "#{val} / ")
     QJ.trigger(target, 'change')
 
@@ -249,14 +248,15 @@ formatMonthExpiry = (e) ->
     QJ.trigger(target, 'change')
 
 formatForwardExpiry = (e) ->
-  digit = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  digit = ev.data
   return unless /^\d+$/.test(digit)
 
   target = e.target
   val     = QJ.val(target)
 
-  if /^\d\d$/.test(val)
-    QJ.val(target, "#{val} / ")
+  if /^\d\d\d$/.test(val)
+    QJ.val(target, val.slice(0,2) + " / " + val.slice(2))
     QJ.trigger(target, 'change')
 
 formatForwardSlash = (e) ->
@@ -332,15 +332,17 @@ restrictCardNumber = (maxLength) -> (e) ->
 
 restrictExpiry = (e, length) ->
   target = e.target
-  digit   = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  digit   = ev.data
   return unless /^\d+$/.test(digit)
 
   return if hasTextSelected(target)
 
-  value = QJ.val(target) + digit
-  value = value.replace(/\D/g, '')
+  value = QJ.val(target)
+  sanitizedValue = value.replace(/\D/g, '')
 
-  return e.preventDefault() if value.length > length
+  if sanitizedValue.length > length
+    QJ.val(target, value.substring(0, value.length -1))
 
 restrictCombinedExpiry = (e) ->
   return restrictExpiry e, 6
@@ -489,10 +491,10 @@ class Payment
       [month, year] = el
       @formatCardExpiryMultiple month, year
     else
-      QJ.on el, 'keypress', restrictCombinedExpiry
-      QJ.on el, 'keypress', formatExpiry
+      QJ.on el, 'input', restrictCombinedExpiry
+      QJ.on el, 'input', formatExpiry
       QJ.on el, 'keypress', formatForwardSlash
-      QJ.on el, 'keypress', formatForwardExpiry
+      QJ.on el, 'input', formatForwardExpiry
       QJ.on el, 'keydown', formatBackExpiry
     el
   @formatCardExpiryMultiple: (month, year) ->
