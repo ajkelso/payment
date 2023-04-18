@@ -220,13 +220,15 @@ formatExpiry = (e) ->
   return unless /^\d+$/.test(digit)
 
   target = e.target
-  val     = QJ.val(target)
+  val     = QJ.val(target) + digit
 
   if /^\d$/.test(val) and val not in ['0', '1']
+    e.preventDefault()
     QJ.val(target, "0#{val} / ")
     QJ.trigger(target, 'change')
 
   else if /^\d\d$/.test(val)
+    e.preventDefault()
     QJ.val(target, "#{val} / ")
     QJ.trigger(target, 'change')
 
@@ -255,8 +257,8 @@ formatForwardExpiry = (e) ->
   target = e.target
   val     = QJ.val(target)
 
-  if /^\d\d\d$/.test(val)
-    QJ.val(target, val.slice(0,2) + " / " + val.slice(2))
+  if /^\d\d$/.test(val)
+    QJ.val(target, "#{val} / ")
     QJ.trigger(target, 'change')
 
 formatForwardSlash = (e) ->
@@ -339,11 +341,10 @@ restrictExpiry = (e, length) ->
 
   return if hasTextSelected(target)
 
-  value = QJ.val(target)
-  sanitizedValue = value.replace(/\D/g, '')
+  value = QJ.val(target) + digit
+  value = value.replace(/\D/g, '')
 
-  if sanitizedValue.length > length
-    QJ.val(target, value.substring(0, value.length - 1))
+  return e.preventDefault() if value.length > length
 
 restrictCombinedExpiry = (e) ->
   return restrictExpiry e, 6
