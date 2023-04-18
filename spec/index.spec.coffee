@@ -170,7 +170,7 @@ describe 'payment', ->
       assert.equal topic, false
 
     it 'should support year shorthand', ->
-      assert.equal Payment.fns.validateCardExpiry('05', '20'), true
+      assert.equal Payment.fns.validateCardExpiry('05', '29'), true
 
   describe 'Validating a CVC number', ->
     it 'should validate a three digit number with no card type', ->
@@ -471,9 +471,9 @@ describe 'payment', ->
       Payment.formatCardExpiry(expiry)
 
       ev = document.createEvent "HTMLEvents"
-      ev.initEvent "keypress", true, true
-      ev.eventName = "keypress"
-      ev.which = "1".charCodeAt(0)
+      ev.initEvent "beforeinput", true, true
+      ev.eventName = "beforeinput"
+      ev.data = "1"
 
       expiry.dispatchEvent(ev)
 
@@ -485,9 +485,9 @@ describe 'payment', ->
       Payment.formatCardExpiry(expiry)
 
       ev = document.createEvent "HTMLEvents"
-      ev.initEvent "keypress", true, true
-      ev.eventName = "keypress"
-      ev.which = "4".charCodeAt(0)
+      ev.initEvent "beforeinput", true, true
+      ev.eventName = "beforeinput"
+      ev.data = "4"
 
       expiry.dispatchEvent(ev)
 
@@ -516,9 +516,9 @@ describe 'payment', ->
       Payment.formatCardExpiry(expiry)
 
       ev = document.createEvent "HTMLEvents"
-      ev.initEvent "keypress", true, true
-      ev.eventName = "keypress"
-      ev.which = "/".charCodeAt(0)
+      ev.initEvent "beforeinput", true, true
+      ev.eventName = "beforeinput"
+      ev.data = "/"
 
       expiry.dispatchEvent(ev)
 

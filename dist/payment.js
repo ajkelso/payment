@@ -287,8 +287,9 @@ var payment =
 	};
 
 	formatExpiry = function(e) {
-	  var digit, target, val;
-	  digit = String.fromCharCode(e.which);
+	  var digit, ev, target, val;
+	  ev = e.originalEvent;
+	  digit = ev.data;
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -325,8 +326,9 @@ var payment =
 	};
 
 	formatForwardExpiry = function(e) {
-	  var digit, target, val;
-	  digit = String.fromCharCode(e.which);
+	  var digit, ev, target, val;
+	  ev = e.originalEvent;
+	  digit = ev.data;
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -339,8 +341,9 @@ var payment =
 	};
 
 	formatForwardSlash = function(e) {
-	  var slash, target, val;
-	  slash = String.fromCharCode(e.which);
+	  var ev, slash, target, val;
+	  ev = e.originalEvent;
+	  slash = ev.data;
 	  if (slash !== '/') {
 	    return;
 	  }
@@ -423,9 +426,10 @@ var payment =
 	};
 
 	restrictExpiry = function(e, length) {
-	  var digit, target, value;
+	  var digit, ev, target, value;
 	  target = e.target;
-	  digit = String.fromCharCode(e.which);
+	  ev = e.originalEvent;
+	  digit = ev.data;
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -629,10 +633,10 @@ var payment =
 	      month = el[0], year = el[1];
 	      this.formatCardExpiryMultiple(month, year);
 	    } else {
-	      QJ.on(el, 'keypress', restrictCombinedExpiry);
-	      QJ.on(el, 'keypress', formatExpiry);
-	      QJ.on(el, 'keypress', formatForwardSlash);
-	      QJ.on(el, 'keypress', formatForwardExpiry);
+	      QJ.on(el, 'beforeinput', restrictCombinedExpiry);
+	      QJ.on(el, 'beforeinput', formatExpiry);
+	      QJ.on(el, 'beforeinput', formatForwardSlash);
+	      QJ.on(el, 'beforeinput', formatForwardExpiry);
 	      QJ.on(el, 'keydown', formatBackExpiry);
 	    }
 	    return el;
