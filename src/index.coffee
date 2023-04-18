@@ -260,7 +260,8 @@ formatForwardExpiry = (e) ->
     QJ.trigger(target, 'change')
 
 formatForwardSlash = (e) ->
-  slash = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  slash = ev.data
   return unless slash is '/'
 
   target = e.target
@@ -491,10 +492,10 @@ class Payment
       [month, year] = el
       @formatCardExpiryMultiple month, year
     else
-      QJ.on el, 'input', restrictCombinedExpiry
-      QJ.on el, 'input', formatExpiry
-      QJ.on el, 'keypress', formatForwardSlash
-      QJ.on el, 'input', formatForwardExpiry
+      QJ.on el, 'beforeinput', restrictCombinedExpiry
+      QJ.on el, 'beforeinput', formatExpiry
+      QJ.on el, 'beforeinput', formatForwardSlash
+      QJ.on el, 'beforeinput', formatForwardExpiry
       QJ.on el, 'keydown', formatBackExpiry
     el
   @formatCardExpiryMultiple: (month, year) ->
