@@ -45,7 +45,7 @@ var payment =
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Payment, QJ, cardFromNumber, cardFromType, cards, cursorSafeAssignValue, defaultFormat, formatBackCardNumber, formatBackExpiry, formatCardNumber, formatExpiry, formatForwardExpiry, formatForwardSlash, formatMonthExpiry, hasTextSelected, luhnCheck, reFormatCardNumber, restrictCVC, restrictCardNumber, restrictCombinedExpiry, restrictExpiry, restrictMonthExpiry, restrictNumeric, restrictYearExpiry, setCardType,
+	/* WEBPACK VAR INJECTION */(function(global) {var Payment, QJ, cardFromNumber, cardFromType, cards, cursorSafeAssignValue, defaultFormat, formatBackCardNumber, formatBackExpiry, formatCardNumber, formatExpiry, formatForwardExpiry, formatForwardSlash, formatMonthExpiry, hasTextSelected, identifyCharacter, luhnCheck, reFormatCardNumber, restrictCVC, restrictCardNumber, restrictCombinedExpiry, restrictExpiry, restrictMonthExpiry, restrictNumeric, restrictYearExpiry, setCardType,
 	  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 	QJ = __webpack_require__(1);
@@ -204,6 +204,14 @@ var payment =
 	  return false;
 	};
 
+	identifyCharacter = function(e, ev) {
+	  if (ev.type === 'keypress') {
+	    return String.fromCharCode(e.which);
+	  } else if (ev.type === 'beforeinput') {
+	    return ev.data;
+	  }
+	};
+
 	reFormatCardNumber = function(e) {
 	  return setTimeout((function(_this) {
 	    return function() {
@@ -289,7 +297,7 @@ var payment =
 	formatExpiry = function(e) {
 	  var digit, ev, target, val;
 	  ev = e.originalEvent;
-	  digit = ev.data;
+	  digit = identifyCharacter(e, ev);
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -328,7 +336,7 @@ var payment =
 	formatForwardExpiry = function(e) {
 	  var digit, ev, target, val;
 	  ev = e.originalEvent;
-	  digit = ev.data;
+	  digit = identifyCharacter(e, ev);
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -343,7 +351,7 @@ var payment =
 	formatForwardSlash = function(e) {
 	  var ev, slash, target, val;
 	  ev = e.originalEvent;
-	  slash = ev.data;
+	  slash = identifyCharacter(e, ev);
 	  if (slash !== '/') {
 	    return;
 	  }
@@ -429,7 +437,7 @@ var payment =
 	  var digit, ev, target, value;
 	  target = e.target;
 	  ev = e.originalEvent;
-	  digit = ev.data;
+	  digit = identifyCharacter(e, ev);
 	  if (!/^\d+$/.test(digit)) {
 	    return;
 	  }
@@ -633,10 +641,10 @@ var payment =
 	      month = el[0], year = el[1];
 	      this.formatCardExpiryMultiple(month, year);
 	    } else {
-	      QJ.on(el, 'beforeinput', restrictCombinedExpiry);
-	      QJ.on(el, 'beforeinput', formatExpiry);
-	      QJ.on(el, 'beforeinput', formatForwardSlash);
-	      QJ.on(el, 'beforeinput', formatForwardExpiry);
+	      QJ.on(el, 'keypress beforeinput', restrictCombinedExpiry);
+	      QJ.on(el, 'keypress beforeinput', formatExpiry);
+	      QJ.on(el, 'keypress beforeinput', formatForwardSlash);
+	      QJ.on(el, 'keypress beforeinput', formatForwardExpiry);
 	      QJ.on(el, 'keydown', formatBackExpiry);
 	    }
 	    return el;

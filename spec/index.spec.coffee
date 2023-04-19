@@ -471,9 +471,9 @@ describe 'payment', ->
       Payment.formatCardExpiry(expiry)
 
       ev = document.createEvent "HTMLEvents"
-      ev.initEvent "beforeinput", true, true
-      ev.eventName = "beforeinput"
-      ev.data = "1"
+      ev.initEvent "keypress", true, true
+      ev.eventName = "keypress"
+      ev.which = "1".charCodeAt(0)
 
       expiry.dispatchEvent(ev)
 

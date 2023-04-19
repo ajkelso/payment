@@ -145,6 +145,14 @@ hasTextSelected = (target) ->
 
 # Private
 
+# Detect digit based on event type
+
+identifyCharacter = (e, ev) ->
+  if ev.type is 'keypress'
+    return String.fromCharCode(e.which)
+  else if ev.type is 'beforeinput'
+    return ev.data
+
 # Format Card Number
 
 reFormatCardNumber = (e) ->
@@ -214,8 +222,9 @@ formatBackCardNumber = (e) ->
 # Format Expiry
 
 formatExpiry = (e) ->
+  ev = e.originalEvent
   # Only format if input is a number
-  digit = String.fromCharCode(e.which)
+  digit = identifyCharacter(e, ev)
   return unless /^\d+$/.test(digit)
 
   target = e.target
@@ -249,7 +258,8 @@ formatMonthExpiry = (e) ->
     QJ.trigger(target, 'change')
 
 formatForwardExpiry = (e) ->
-  digit = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  digit = identifyCharacter(e, ev)
   return unless /^\d+$/.test(digit)
 
   target = e.target
@@ -260,7 +270,8 @@ formatForwardExpiry = (e) ->
     QJ.trigger(target, 'change')
 
 formatForwardSlash = (e) ->
-  slash = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  slash = identifyCharacter(e, ev)
   return unless slash is '/'
 
   target = e.target
@@ -332,7 +343,8 @@ restrictCardNumber = (maxLength) -> (e) ->
 
 restrictExpiry = (e, length) ->
   target = e.target
-  digit   = String.fromCharCode(e.which)
+  ev = e.originalEvent
+  digit   = identifyCharacter(e, ev)
   return unless /^\d+$/.test(digit)
 
   return if hasTextSelected(target)
@@ -489,10 +501,10 @@ class Payment
       [month, year] = el
       @formatCardExpiryMultiple month, year
     else
-      QJ.on el, 'keypress', restrictCombinedExpiry
-      QJ.on el, 'keypress', formatExpiry
-      QJ.on el, 'keypress', formatForwardSlash
-      QJ.on el, 'keypress', formatForwardExpiry
+      QJ.on el, 'keypress beforeinput', restrictCombinedExpiry
+      QJ.on el, 'keypress beforeinput', formatExpiry
+      QJ.on el, 'keypress beforeinput', formatForwardSlash
+      QJ.on el, 'keypress beforeinput', formatForwardExpiry
       QJ.on el, 'keydown', formatBackExpiry
     el
   @formatCardExpiryMultiple: (month, year) ->
