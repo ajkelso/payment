@@ -463,35 +463,6 @@ describe 'payment', ->
 
       assert.equal QJ.val(number), '4111 1111 1111 1111 1'
   describe 'formatCardExpiry', ->
-    it 'should add a slash after two numbers', ->
-      expiry = document.createElement('input')
-      expiry.type = "text"
-      QJ.val(expiry, '1')
-
-      Payment.formatCardExpiry(expiry)
-
-      ev = document.createEvent "HTMLEvents"
-      ev.initEvent "keypress", true, true
-      ev.eventName = "keypress"
-      ev.which = "1".charCodeAt(0)
-
-      expiry.dispatchEvent(ev)
-
-      assert.equal QJ.val(expiry), '11 / '
-    it 'should format add a 0 and slash to a number > 1 correctly', ->
-      expiry = document.createElement('input')
-      expiry.type = "text"
-
-      Payment.formatCardExpiry(expiry)
-
-      ev = document.createEvent "HTMLEvents"
-      ev.initEvent "beforeinput", true, true
-      ev.eventName = "beforeinput"
-      ev.data = "4"
-
-      expiry.dispatchEvent(ev)
-
-      assert.equal QJ.val(expiry), '04 / '
     it 'should format add a 0 to a number > 1 in the month input correctly', ->
       month = document.createElement('input')
       month.type = "text"
@@ -508,22 +479,6 @@ describe 'payment', ->
       month.dispatchEvent(ev)
 
       assert.equal QJ.val(month), '04'
-    it 'should format forward slash shorthand correctly', ->
-      expiry = document.createElement('input')
-      expiry.type = "text"
-      QJ.val(expiry, '1')
-
-      Payment.formatCardExpiry(expiry)
-
-      ev = document.createEvent "HTMLEvents"
-      ev.initEvent "beforeinput", true, true
-      ev.eventName = "beforeinput"
-      ev.data = "/"
-
-      expiry.dispatchEvent(ev)
-
-      assert.equal QJ.val(expiry), '01 / '
-
     it 'should only allow numbers', ->
       expiry = document.createElement('input')
       expiry.type = "text"
@@ -570,21 +525,6 @@ describe 'payment', ->
       expiry.dispatchEvent(ev)
 
       assert.equal QJ.val(expiry), '1'
-    it 'should restrict combined expiry fields to length <= 6 digits', ->
-      expiry = document.createElement('input')
-      expiry.type = "text"
-      QJ.val(expiry, '12 / 2018')
-
-      Payment.formatCardExpiry(expiry)
-
-      ev = document.createEvent "HTMLEvents"
-      ev.initEvent "keypress", true, true
-      ev.eventName = "keypress"
-      ev.which = "1".charCodeAt(0)
-
-      expiry.dispatchEvent(ev)
-
-      assert.equal QJ.val(expiry), '12 / 2018'
     it 'should restrict month expiry fields to length <= 2 digits', ->
       month = document.createElement('input')
       month.type = "text"
@@ -623,6 +563,123 @@ describe 'payment', ->
       year.dispatchEvent(ev)
 
       assert.equal QJ.val(year), '2018'
+    describe 'when triggered by beforeinput', ->
+      createBeforeInputEvent = (char) ->
+        ev = document.createEvent "HTMLEvents"
+        ev.initEvent "beforeinput", true, true
+        ev.eventName = "beforeinput"
+        ev.data = char
+        return ev
+
+      it 'should add a slash after two numbers', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '1')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createBeforeInputEvent('1')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '11 / '
+
+      it 'should format add a 0 and slash to a number > 1 correctly', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createBeforeInputEvent('4')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '04 / '
+
+      it 'should format forward slash shorthand correctly', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '1')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createBeforeInputEvent('/')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '01 / '
+
+      it 'should restrict combined expiry fields to length <= 6 digits', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '12 / 2018')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createBeforeInputEvent('1')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '12 / 2018'
+
+    describe 'when triggered by keypress', ->
+      createKeypressEvent = (char) ->
+        ev = document.createEvent "HTMLEvents"
+        ev.initEvent "keypress", true, true
+        ev.eventName = "keypress"
+        ev.which = char.charCodeAt(0)
+        return ev
+
+      it 'should add a slash after two numbers', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '1')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createKeypressEvent('1')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '11 / '
+
+      it 'should format add a 0 and slash to a number > 1 correctly', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createKeypressEvent('4')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '04 / '
+
+      it 'should format forward slash shorthand correctly', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '1')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createKeypressEvent('/')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '01 / '
+
+      it 'should restrict combined expiry fields to length <= 6 digits', ->
+        expiry = document.createElement('input')
+        expiry.type = "text"
+        QJ.val(expiry, '12 / 2018')
+
+        Payment.formatCardExpiry(expiry)
+
+        ev = createKeypressEvent('1')
+
+        expiry.dispatchEvent(ev)
+
+        assert.equal QJ.val(expiry), '12 / 2018'
   describe 'formatCVC', ->
     it 'should allow only numbers', ->
       cvc = document.createElement('input')
