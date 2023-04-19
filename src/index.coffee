@@ -145,7 +145,7 @@ hasTextSelected = (target) ->
 
 # Private
 
-# Detect digit based on event type
+# Detect character based on event type
 
 identifyCharacter = (e, ev) ->
   if ev.type is 'keypress'
